@@ -12,4 +12,4 @@ export const registerUser=async(cred)=>{
 
 export const logout = async () => {
   localStorage.removeItem("token");
-};
+}; 
