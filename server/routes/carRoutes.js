@@ -20,4 +20,4 @@ router.put("/:id", protect, updateCar);
 router.delete("/:id", protect, deleteCar);
 router.patch("/:id", protect, soldCar);
 
-export default router;
+export default router; 

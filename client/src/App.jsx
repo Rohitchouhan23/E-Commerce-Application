@@ -10,7 +10,7 @@ function App() {
     <>
         <div className="min-h-screen flex flex-col">
           <Header/>
-            <main className="flex-grow container mx-auto px-4 py-8">
+            <main className="px-1 py-1 lg:px-0">
               <Routes>
                 <Route path='/' element={<Home/>}/>
                 <Route path='/login' element={<Login/>}/>

@@ -1,4 +1,4 @@
-import Car from "../models/Car"
+import Car from "../models/Car.js"
 
 // Get unique brands
 export const getUniqueBrands = async (req, res) => {

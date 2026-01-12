@@ -1,8 +1,12 @@
 import React from 'react'
-
+import Carousel from "../component/Carousel";
+import AllCars from '../component/AllCars';
 function Home() {
   return (
-    <div>Home</div>
+    <div>
+      <Carousel/>
+      <AllCars/>
+    </div>
   )
 }
 
