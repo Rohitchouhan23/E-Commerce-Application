@@ -5,6 +5,8 @@ import Footer from './component/Footer'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import CarDetails from './component/CarDetails';
+import CarForm from './pages/CarForm'
 function App() {
   return (
     <>
@@ -15,6 +17,8 @@ function App() {
                 <Route path='/' element={<Home/>}/>
                 <Route path='/login' element={<Login/>}/>
                 <Route path='/register' element={<Register/>}/>
+                <Route path='/cars/:id' element={<CarDetails/>}/>
+                <Route path='/carsform' element={<CarForm/>}/>
               </Routes>
             </main>
             <Footer/>

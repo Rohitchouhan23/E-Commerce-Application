@@ -17,6 +17,6 @@ export const protect= async(req,res,next)=>{
         }
     }
     else{
-        return res.status(401).json({message:"no token found"});
+        return res.status(401).json({message:"YOU ARE UNAUTHORIZED"});
     }
 } 

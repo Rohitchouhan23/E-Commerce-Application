@@ -39,6 +39,11 @@ function Header() {
                             className="text-gray-700 hover:text-gray-900 font-bold text-xl">
                             Dashboard   
                         </Link>
+                        <Link 
+                            to="/carsform"
+                            className="text-gray-700 hover:text-gray-900 font-bold text-xl">
+                            Add Car   
+                        </Link>
                         <button 
                             onClick={handleLogout}
                             className="text-gray-700 hover:text-gray-900 font-bold text-xl">
@@ -67,7 +72,8 @@ function Header() {
             {token ? (
             <>
                 <Link to="/dashboard" onClick={() => setIsOpen(false)} className="px-3 py-2 hover:bg-gray-100 rounded-md font-bold">Dashboard</Link>
-                <button onClick={() => {handleLogout(); setIsOpen(false)}} className="px-3 py-2 hover:bg-gray-100 rounded-md font-bold">Logout</button>
+                <Link to="/carsform" onClick={() => setIsOpen(false)} className="px-3 py-2 hover:bg-gray-100 rounded-md font-bold">Add Car</Link>
+                <button onClick={() => {handleLogout(); setIsOpen(false)}} className="  hover:bg-gray-100 rounded-md font-bold">Logout</button>
             </>
             ) : (
             <>

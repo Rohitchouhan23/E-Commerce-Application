@@ -55,3 +55,4 @@ export const soldCar = async (id) => {
   const res = await api.patch(`/api/cars/${id}`);
   return res.data;
 };
+

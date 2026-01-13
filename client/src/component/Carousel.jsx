@@ -29,7 +29,7 @@ export default function HeroCarousel() {
 
                     <p className="text-gray-300 text-xl font-semibold">
                         Discover trusted buyers and verified sellers for premium SUVs
-                        like Fortuner, XUV, Scorpio & more.
+                        like BMW, Toyota, Audi & more.
                     </p>
 
                     <ul className="space-y-3 text-gray-300 text-lg font-serif">
@@ -53,7 +53,7 @@ export default function HeroCarousel() {
                 </div>
 
                 {/* 🔹 RIGHT CAROUSEL */}
-                <div className="relative w-full h-[320px] lg:h-[420px] overflow-hidden rounded-3xl shadow-2xl">
+                <div className="relative w-full h-[200px] md:h-[400px] lg:h-[420px] overflow-hidden rounded-3xl shadow-2xl">
                     {images.map((img, index) => (
                         <img
                             key={index}

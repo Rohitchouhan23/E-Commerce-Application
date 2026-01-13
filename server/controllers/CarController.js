@@ -5,7 +5,7 @@ export const createCar = async (req, res) => {
     try {
         const carData = {
             ...req.body,
-            owner: req.user._id
+            owner: req.user._id 
         };
         const car = await Car.create(carData);
         res.status(201).json({
