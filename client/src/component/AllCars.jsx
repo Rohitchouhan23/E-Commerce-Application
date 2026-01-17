@@ -4,27 +4,30 @@ import { useNavigate } from "react-router-dom";
 
 function AllCars() {
   const [cars, setCars] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const navigate=useNavigate()
 
   useEffect(() => {
     const fetchCars = async () => {
       try {
         const data = await getAllCars();
-        setCars(data.cars); 
+        setCars(data.cars);
+        // console.log(data)
+        // console.log(data.cars)  
       } catch (error) {
         console.error(error);
-      } finally {
-        setLoading(false);
-      }
+      } 
+      // finally {
+      //   setLoading(false);
+      // }
     };
 
     fetchCars();
   }, []);
 
-  if (loading) {
-    return <p className="text-center py-10">Loading cars...</p>;
-  }
+  // if (loading) {
+  //   return <p className="text-center py-10">Loading cars...</p>;
+  // }
 
   return (
     <section className="max-w-full mx-auto px-4 py-10">

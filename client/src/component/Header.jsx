@@ -13,7 +13,7 @@ function Header() {
        navigate("/login");
      };
   return (
-    <header className=" sticky top-0 z-50 shadow  bg-gray-100">
+    <header className=" sticky top-0 z-50 shadow  bg-gray-200">
         <div className='container mx-auto px-4 py-4 flex justify-between items-center'>
             <Link to="/" className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
             CarBazaar

@@ -6,7 +6,8 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import CarDetails from './component/CarDetails';
-import CarForm from './pages/CarForm'
+import CarForm from './pages/CarForm';
+import Dashboard from './pages/Dashboard'
 function App() {
   return (
     <>
@@ -19,6 +20,7 @@ function App() {
                 <Route path='/register' element={<Register/>}/>
                 <Route path='/cars/:id' element={<CarDetails/>}/>
                 <Route path='/carsform' element={<CarForm/>}/>
+                <Route path='/dashboard' element={<Dashboard/>}/>
               </Routes>
             </main>
             <Footer/>

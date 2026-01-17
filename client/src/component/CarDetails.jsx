@@ -11,7 +11,7 @@ function CarDetails() {
     const fetchCar = async () => {
       try {
         const data = await getCarById(id);
-        setCar(data.car); // backend response ke hisab se
+        setCar(data.car); 
       } catch (error) {
         console.error(error);
       } finally {
@@ -20,13 +20,13 @@ function CarDetails() {
     };
 
     fetchCar();
-  }, [id]);
+  }, []);
 
   if (loading) return <p className="text-center py-10">Loading car details...</p>;
   if (!car) return <p className="text-center py-10">Car not found</p>;
 
   return (
-    <section className="max-w-6xl mx-auto px-4 py-10">
+    <section className="max-w-6xl mx-auto py-32">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         
         {/* IMAGE */}

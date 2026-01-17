@@ -66,6 +66,7 @@ export const getAllCar = async (req, res) => {
             success: true,
             count: cars.length,
             cars,
+            
         });
     } catch (error) {
         res.status(500).json({
@@ -209,4 +210,4 @@ export const soldCar = async (req, res) => {
             message: "Failed to mark car as sold"
         });
     }
-}
+} 
