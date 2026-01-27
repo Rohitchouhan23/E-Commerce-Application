@@ -13,7 +13,7 @@ function App() {
     <>
         <div className="min-h-screen flex flex-col">
           <Header/>
-            <main className="px-1 py-1 lg:px-0">
+            <main className="px-1 lg:px-0 mt-20 mb-1">
               <Routes>
                 <Route path='/' element={<Home/>}/>
                 <Route path='/login' element={<Login/>}/>

@@ -1,33 +1,31 @@
 import { useEffect, useState } from "react";
 import { getAllCars } from "../services/authService";
 import { useNavigate } from "react-router-dom";
+import SearchBar from "./SearchBar";
 
 function AllCars() {
   const [cars, setCars] = useState([]);
-  // const [loading, setLoading] = useState(true);
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
+  // 🔹 Initial load (without filters)
   useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        const data = await getAllCars();
-        setCars(data.cars);
-        // console.log(data)
-        // console.log(data.cars)  
-      } catch (error) {
-        console.error(error);
-      } 
-      // finally {
-      //   setLoading(false);
-      // }
-    };
-
     fetchCars();
   }, []);
 
-  // if (loading) {
-  //   return <p className="text-center py-10">Loading cars...</p>;
-  // }
+  // 🔹 Fetch cars (reusable)
+  const fetchCars = async (filters = {}) => {
+    try {
+      const res = await getAllCars(filters);
+      setCars(res.cars);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // 🔹 SearchBar callback
+  const handleSearch = (filters) => {
+    fetchCars(filters);
+  };
 
   return (
     <section className="max-w-full mx-auto px-4 py-10">
@@ -35,8 +33,11 @@ function AllCars() {
         Available Cars
       </h2>
 
-      {/* 🔹 RESPONSIVE GRID */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* 🔍 SEARCH BAR (added only) */}
+      <SearchBar onSearch={handleSearch} />
+
+      {/* 🔹 RESPONSIVE GRID (UNCHANGED) */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         {cars.map((car) => (
           <div
             key={car._id}
@@ -52,13 +53,13 @@ function AllCars() {
 
             {/* CONTENT */}
             <div className="lg:p-4 lg:space-y-1 h-22 p-2">
-              <h3 className="lg:text-xl  font-bold text-gray-800">
+              <h3 className="lg:text-xl font-bold text-gray-800">
                 {car.title}
               </h3>
               <p className="text-gray-500 font-medium">
                 Brand: {car.brand}
               </p>
-                <p className="text-gray-500 font-medium">
+              <p className="text-gray-500 font-medium">
                 Price: {car.price}
               </p>
             </div>

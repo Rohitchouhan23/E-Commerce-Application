@@ -1,132 +1,133 @@
-import React, { useEffect, useState } from "react";
-import { getMyCars } from "../services/authService";
-import {deleteCar} from "../services/authService";
-import {soldCar} from "../services/authService";
-function Dashboard() {
-  const [cars, setCars] = useState([]);
-  const [loading, setLoading] = useState(true);
+import { useState, useEffect } from "react";
+import Mycars from "../component/Mycars";
+import CarForm from "./CarForm";
 
+const Dashboard = () => {
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("MyCars");
+  const [mobileMenu, setMobileMenu] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const options = [
+    "MyCars",
+    "MySoldCars",
+    "AddCars",
+    "Orders",
+    "Settings",
+  ];
+
+  // Screen size detect
   useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        const data = await getMyCars();
-        setCars(data.cars);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024); // 1024 = lg breakpoint
+      if (window.innerWidth >= 1024) setMobileMenu(false); // desktop pe menu close
     };
-
-    fetchCars();
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleDelete = async (id) => {
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this car?"
+  const SidebarContent = () => (
+    <>
+      <h1 className="text-xl font-bold mb-6">My Dashboard</h1>
+
+      {/* VIEW ALL */}
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center bg-gray-300 px-4 py-2 rounded-md"
+      >
+        <span>View All</span>
+        <span
+          className={`ml-auto transition-transform duration-700 ${
+            open ? "rotate-180" : "rotate-0"
+          }`}
+        >
+          ▼
+        </span>
+      </button>
+
+      {/* SMOOTH DROPDOWN */}
+      <div
+        className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${
+          open ? "max-h-96 mt-3" : "max-h-0"
+        }`}
+      >
+        <ul className="space-y-2 py-2">
+          {options.map((item) => (
+            <li
+              key={item}
+              onClick={() => {
+                setActive(item);
+                if (isMobile) setMobileMenu(false); // mobile pe close
+              }}
+              className={`cursor-pointer px-4 py-2 rounded-md transition-colors hover:bg-indigo-600 ${
+                active === item ? "bg-indigo-600" : "bg-slate-800"
+              }`}
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
   );
-
-  if (!confirmDelete) return;
-
-  try {
-    await deleteCar(id);
-      setCars((prevCars) =>
-      prevCars.filter((car) => car._id !== id)
-    );
-  } catch (error) {
-    alert("Failed to delete car");
-    console.log(error);
-  }
-};
-  const handleSold = async (id) => {
-  const confirmSold = window.confirm(
-    "Are you sure this car is sold?"
-  );
-
-  if (!confirmSold) return;
-
-  try {
-    const res = await soldCar(id);
-
-    // UI update
-    setCars((prevCars) =>
-      prevCars.map((car) =>
-        car._id === id ? { ...car, sold: true } : car
-      )
-    );
-  } catch (error) {
-    alert("Failed to mark car as sold");
-    console.log(error);
-  }
-};
-
-
-
-  if (loading) {
-    return <p className="text-center mt-10">Loading your cars...</p>;
-  }
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl text-center font-bold mb-6">My Cars</h2>
+    <div className="flex min-h-screen bg-gray-100 relative">
+      {/* DESKTOP SIDEBAR */}
+      <div className="w-80  rounded-tr-3xl my-4 rounded-br-3xl bg-slate-900 text-white p-4 hidden lg:block">
+        <SidebarContent />
+      </div>
 
-      {cars.length === 0 ? (
-        <p>No cars listed yet</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {cars.map((car) => (
-            <div
-              key={car._id}
-              className="border rounded-lg shadow hover:shadow-lg transition"
+      {/* MOBILE / TABLET SIDEBAR */}
+      {isMobile && mobileMenu && (
+        <div className=" inset-0 z-40 lg:hidden">
+          {/* BACKDROP */}
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setMobileMenu(false)}
+          />
+          {/* SIDEBAR */}
+          <div className="absolute left-0 top-0 w-64 h-full bg-slate-900 text-white p-4">
+            <button
+              className="mb-4 text-right w-full text-xl"
+              onClick={() => setMobileMenu(false)}
             >
-              {/* IMAGE */}
-              <img
-                src={car.images[0]}
-                alt={car.title}
-                className="w-full h-60 object-cover rounded-t-lg"
-              />
-
-              {/* DETAILS */}
-              <div className="p-4">
-                <h3 className="text-lg font-semibold">{car.title}</h3>
-                <p className="text-gray-600">{car.brand}</p>
-                <p className="text-green-600 font-bold">₹ {car.price}</p>
-
-                {/* BUTTONS */}
-                <div className="flex justify-between mt-4">
-                  <button
-                  className="px-3 py-1 bg-blue-500 text-white rounded text-sm">
-                    Update
-                  </button>
-
-                  <button onClick={() => handleDelete(car._id)} className="px-3 py-1 bg-red-500 text-white rounded text-sm">
-                    Delete
-                  </button>
-
-                  <button
-                        onClick={() => handleSold(car._id)}
-                        disabled={car.sold}
-                        className={`px-3 py-1 text-white rounded text-sm ${
-                          car.sold ? "bg-gray-400 cursor-not-allowed" : "bg-gray-700"
-                        }`}
-                      >
-                        Sold
-                  </button>
-
-                  {car.sold && (
-                      <span className="text-red-500 font-semibold text-sm">
-                        SOLD
-                      </span>
-                    )}
-
-                </div>
-              </div>
-            </div>
-          ))}
+              ✕
+            </button>
+            <SidebarContent />
+          </div>
         </div>
       )}
+
+      {/* RIGHT CONTENT */}
+      <div className="flex-1 pt-4 lg:p-6 px-4">
+        {/* MOBILE HEADER */}
+        {isMobile && (
+          <div className="flex items-center justify-between mb-4 lg:hidden">
+            <button
+              onClick={() => setMobileMenu(true)}
+              className="text-2xl bg-slate-900 text-white px-3 py-1 rounded-md"
+            >
+              ☰
+            </button>
+            <h2 className="text-lg font-semibold">{active}</h2>
+          </div>
+        )}
+
+        {/* DESKTOP HEADER */}
+        <h2 className="text-2xl font-semibold mb-4 hidden lg:block">{active}</h2>
+
+        <div className="bg-white rounded-xl shadow lg:p-6">
+          {active === "MyCars" && <Mycars />}
+          {active === "Users" && <p>👤 Users management section</p>}
+          {active === "AddCars" && <CarForm/>}
+          {active === "Products" && <p>📦 Product listing</p>}
+          {active === "Settings" && <p>⚙️ Settings panel</p>}
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default Dashboard;

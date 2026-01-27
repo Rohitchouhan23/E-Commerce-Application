@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
 
 import {useNavigate,Link} from "react-router-dom"
 import { logout } from '../services/authService';
@@ -7,16 +7,72 @@ function Header() {
    const navigate = useNavigate();
    const token = localStorage.getItem("token"); 
    const [isOpen, setIsOpen] = useState(false);
+   const [showNavbar, setShowNavbar] = useState(true);
+   const [lastScrollY, setLastScrollY] = useState(0);
+
 
    const handleLogout = () => {
        logout();
        navigate("/login");
      };
+
+    useEffect(() => {
+    const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+
+    // Top pe hamesha show
+    if (currentScrollY < 20) {
+      setShowNavbar(true);
+      setLastScrollY(currentScrollY);
+      return;
+    }
+
+    if (currentScrollY < lastScrollY) {
+      
+      setShowNavbar(true);
+    } else {
+      
+      setShowNavbar(false);
+    }
+
+    setLastScrollY(currentScrollY);
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+ }, [lastScrollY]);
+
+
+
   return (
-    <header className=" sticky top-0 z-50 shadow  bg-gray-200">
-        <div className='container mx-auto px-4 py-4 flex justify-between items-center'>
+<header
+  className={`fixed   mx-auto w-full rounded z-50 bg-gray-100 shadow-xl transition-transform duration-300  ${showNavbar ? "translate-y-0" : "-translate-y-32"} `}>
+         <div className='container mx-auto px-4 py-6 flex justify-between items-center'>
             <Link to="/" className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
-            CarBazaar
+            <Link
+                to="/"
+                className="flex items-center gap-2 text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500"
+                >
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
+                <svg
+                className="w-6 h-6 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 13l2-5a3 3 0 012.8-2h8.4a3 3 0 012.8 2l2 5M5 13h14M6.5 16a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm14 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM8 10h8"
+                />
+                </svg>
+
+                </div>
+
+                <span>CarBazaar</span>
+           </Link>
+
             </Link>
             {/* Hamburger menu for mobile */}
                 <button 

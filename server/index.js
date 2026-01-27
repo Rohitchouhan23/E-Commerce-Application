@@ -17,4 +17,4 @@ app.use('/api/cars',carRoutes);
 app.use('/api/filter',filterRoutes);
 
 const PORT=process.env.PORT||4000;
-app.listen(PORT,()=>console.log(`server is on ${PORT} 🚀`))
+app.listen(PORT,"0.0.0.0",()=>console.log(`server is on ${PORT} 🚀`))

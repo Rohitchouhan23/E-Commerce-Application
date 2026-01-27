@@ -14,11 +14,20 @@ export const logout = async () => {
   localStorage.removeItem("token");
 }; 
 
-// GET /api/cars
-export const getAllCars = async () => {
-  const res = await api.get("/api/cars");
+// // GET /api/cars
+// export const getAllCars = async () => {
+//   const res = await api.get("/api/cars");
+//   return res.data;
+// };
+
+// GET /api/cars (with filters)
+export const getAllCars = async (filters = {}) => {
+  const res = await api.get("/api/cars", {
+    params: filters,   // 👈 YAHI MISSING THA
+  });
   return res.data;
 };
+
 
 // GET /api/cars/my-cars (protected)
 export const getMyCars = async () => {
@@ -55,4 +64,28 @@ export const soldCar = async (id) => {
   const res = await api.patch(`/api/cars/${id}`);
   return res.data;
 };
+
+
+
+
+
+// ✅ Get unique brands
+export const getUniqueBrands = async () => {
+  const res = await api.get("/api/filter/brand");
+  return res.data;
+};
+
+// ✅ Get price range
+export const getPriceRange = async () => {
+  const res = await api.get("/api/filter/price");
+  return res.data;
+};
+
+// ✅ Get year range
+export const getYearRange = async () => {
+  const res = await api.get("/api/filter/year");
+  return res.data;
+};
+
+
 
