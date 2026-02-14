@@ -4,7 +4,7 @@ import { getCarById } from "../services/authService";
 
 function CarDetails() {
   const { id } = useParams();
-  const navigate = useNavigate(); // 👈 added
+  const navigate = useNavigate();
   const [car, setCar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -33,7 +33,7 @@ function CarDetails() {
   return (
     <>
       {/* ================= MAIN SECTION ================= */}
-      <section className="mt-20 h-screen bg-gradient-to-br from-slate-100 via-white to-slate-200 flex items-center justify-center px-6 relative">
+      <section className="mt-20 min-h-screen bg-gradient-to-br from-slate-100 via-white to-slate-200 flex items-center justify-center px-6 relative">
 
         {/* 🔙 GO BACK BUTTON */}
         <button
@@ -44,11 +44,11 @@ function CarDetails() {
         </button>
 
         <div className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 h-[80vh]">
+          {/* ===== Grid container ===== */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 h-auto lg:h-[80vh] overflow-y-auto">
             
             {/* ================= IMAGE SIDE ================= */}
             <div className="relative group bg-slate-100 flex items-center justify-center p-6">
-              
               <img
                 src={car.images?.[0]}
                 alt={car.title}
@@ -62,7 +62,7 @@ function CarDetails() {
             </div>
 
             {/* ================= DETAILS SIDE ================= */}
-            <div className="p-8 flex flex-col justify-between">
+            <div className="p-8 flex flex-col">
               
               <div>
                 <h1 className="text-3xl font-bold text-gray-800 mb-3">
@@ -95,7 +95,8 @@ function CarDetails() {
                 </div>
               </div>
 
-              <div className="mt-6 flex gap-4">
+              {/* Buttons always at bottom on mobile */}
+              <div className="mt-6 flex gap-4 lg:mt-auto">
                 <button className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-xl font-semibold hover:scale-105 transition duration-300 shadow-md hover:shadow-xl">
                   Buy Now
                 </button>
