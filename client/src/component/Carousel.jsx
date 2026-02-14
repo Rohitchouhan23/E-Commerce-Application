@@ -38,7 +38,7 @@ export default function HeroCarousel() {
               <li>✔ Direct Buyer–Seller Contact</li>
             </ul>
 
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-4 pt-4 pl-3 lg:pl-0 sm:pl-0">
               <button
                 className="px-6 py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-700"
                 onClick={() => navigate("/cars")}
