@@ -1,26 +1,36 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Mycars from "../component/Mycars";
-import CarForm from "./CarForm";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  LayoutDashboard,
+  Car,
+  PlusCircle,
+  Package,
+  Settings,
+  Menu,
+  X,
+} from "lucide-react";
+import MySoldCars from "../component/MySoldCars";
 
 const Dashboard = () => {
-  const [open, setOpen] = useState(false);
   const [active, setActive] = useState("MyCars");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const navigate = useNavigate();
 
   const options = [
-    "MyCars",
-    "MySoldCars",
-    "AddCars",
-    "Orders",
-    "Settings",
+    { name: "MyCars", icon: <Car size={18} /> },
+    { name: "MySoldCars", icon: <LayoutDashboard size={18} /> },
+    { name: "AddCars", icon: <PlusCircle size={18} /> },
+    { name: "Orders", icon: <Package size={18} /> },
+    { name: "Settings", icon: <Settings size={18} /> },
   ];
 
-  // Screen size detect
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 1024); // 1024 = lg breakpoint
-      if (window.innerWidth >= 1024) setMobileMenu(false); // desktop pe menu close
+      setIsMobile(window.innerWidth < 1024);
+      if (window.innerWidth >= 1024) setMobileMenu(false);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -29,102 +39,129 @@ const Dashboard = () => {
 
   const SidebarContent = () => (
     <>
-      <h1 className="text-xl font-bold mb-6">My Dashboard</h1>
+      <div className="flex items-center gap-2 mb-10">
+        <div className="bg-gradient-to-r from-indigo-500 to-cyan-500 p-2 rounded-xl">
+          <Car size={20} className="text-white" />
+        </div>
+        <h1 className="text-xl font-bold tracking-wide text-white">
+          CarPanel
+        </h1>
+      </div>
 
-      {/* VIEW ALL */}
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center bg-gray-300 px-4 py-2 rounded-md"
-      >
-        <span>View All</span>
-        <span
-          className={`ml-auto transition-transform duration-700 ${
-            open ? "rotate-180" : "rotate-0"
-          }`}
-        >
-          ▼
-        </span>
-      </button>
+      <div className="space-y-3">
+        {options.map((item) => (
+          <div
+            key={item.name}
+            onClick={() => {
+              // ✅ FIXED NAVIGATION
+              if (item.name === "AddCars") {
+                navigate("/carsform");
+              } else {
+                setActive(item.name);
+              }
 
-      {/* SMOOTH DROPDOWN */}
-      <div
-        className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${
-          open ? "max-h-96 mt-3" : "max-h-0"
-        }`}
-      >
-        <ul className="space-y-2 py-2">
-          {options.map((item) => (
-            <li
-              key={item}
-              onClick={() => {
-                setActive(item);
-                if (isMobile) setMobileMenu(false); // mobile pe close
-              }}
-              className={`cursor-pointer px-4 py-2 rounded-md transition-colors hover:bg-indigo-600 ${
-                active === item ? "bg-indigo-600" : "bg-slate-800"
-              }`}
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
+              if (isMobile) setMobileMenu(false);
+            }}
+            className={`relative flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-300 group ${
+              active === item.name
+                ? "bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow-lg"
+                : "text-gray-400 hover:bg-slate-800 hover:text-white"
+            }`}
+          >
+            {item.icon}
+            <span className="font-medium">{item.name}</span>
+
+            {active === item.name && (
+              <motion.div
+                layoutId="activeIndicator"
+                className="absolute right-0 top-0 h-full w-1 bg-white rounded-l-xl"
+              />
+            )}
+          </div>
+        ))}
       </div>
     </>
   );
 
   return (
-    <div className="flex min-h-screen bg-gray-100 relative">
+    <div className="mt-20 flex min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
+      
       {/* DESKTOP SIDEBAR */}
-      <div className="w-80  rounded-tr-3xl my-4 rounded-br-3xl bg-slate-900 text-white p-4 hidden lg:block">
+      <div className="w-72 bg-slate-900 p-8 hidden lg:block shadow-2xl">
         <SidebarContent />
       </div>
 
-      {/* MOBILE / TABLET SIDEBAR */}
-      {isMobile && mobileMenu && (
-        <div className=" inset-0 z-40 lg:hidden">
-          {/* BACKDROP */}
-          <div
-            className="absolute inset-0 bg-black/50"
-            onClick={() => setMobileMenu(false)}
-          />
-          {/* SIDEBAR */}
-          <div className="absolute left-0 top-0 w-64 h-full bg-slate-900 text-white p-4">
-            <button
-              className="mb-4 text-right w-full text-xl"
+      {/* MOBILE SIDEBAR */}
+      <AnimatePresence>
+        {isMobile && mobileMenu && (
+          <div className="fixed inset-0 z-50 flex">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black backdrop-blur-sm"
               onClick={() => setMobileMenu(false)}
+            />
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ duration: 0.3 }}
+              className="relative w-64 h-full bg-slate-900 p-6 shadow-2xl"
             >
-              ✕
-            </button>
-            <SidebarContent />
+              <button
+                className="mb-6 text-white"
+                onClick={() => setMobileMenu(false)}
+              >
+                <X />
+              </button>
+              <SidebarContent />
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* RIGHT CONTENT */}
-      <div className="flex-1 pt-4 lg:p-6 px-4">
-        {/* MOBILE HEADER */}
+      <div className="flex-1 p-4 sm:p-6 lg:p-10">
+        
+        {/* Mobile Header */}
         {isMobile && (
-          <div className="flex items-center justify-between mb-4 lg:hidden">
+          <div className="flex items-center justify-between mb-6">
             <button
               onClick={() => setMobileMenu(true)}
-              className="text-2xl bg-slate-900 text-white px-3 py-1 rounded-md"
+              className="bg-gradient-to-r from-indigo-600 to-cyan-600 text-white p-2 rounded-lg shadow-md"
             >
-              ☰
+              <Menu />
             </button>
-            <h2 className="text-lg font-semibold">{active}</h2>
+            <h2 className="text-xl font-semibold">{active}</h2>
           </div>
         )}
 
-        {/* DESKTOP HEADER */}
-        <h2 className="text-2xl font-semibold mb-4 hidden lg:block">{active}</h2>
+        {/* Desktop Header */}
+        {!isMobile && (
+          <h2 className="text-3xl font-bold mb-8 text-gray-800">
+            {active}
+          </h2>
+        )}
 
-        <div className="bg-white rounded-xl shadow lg:p-6">
+        <motion.div
+          key={active}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl p-4 sm:p-6 lg:p-8 border border-gray-200"
+        >
           {active === "MyCars" && <Mycars />}
-          {active === "Users" && <p>👤 Users management section</p>}
-          {active === "AddCars" && <CarForm/>}
-          {active === "Products" && <p>📦 Product listing</p>}
-          {active === "Settings" && <p>⚙️ Settings panel</p>}
-        </div>
+          {active === "MySoldCars" && (
+            <MySoldCars/>
+          )}
+          {active === "Orders" && (
+            <p>📦 Orders management section.</p>
+          )}
+          {active === "Settings" && (
+            <p>⚙️ Settings panel.</p>
+          )}
+        </motion.div>
       </div>
     </div>
   );

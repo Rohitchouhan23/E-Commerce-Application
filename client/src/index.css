@@ -19,3 +19,15 @@
 .animate-zoom {
   animation: zoomEffect 2s ease-in-out;
 }
+
+
+
+@keyframes gradientMove {
+  0% { background-position: 0% }
+  100% { background-position: 200% }
+}
+
+.animate-gradient {
+  background-size: 200% auto;
+  animation: gradientMove 4s linear infinite;
+}

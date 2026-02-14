@@ -54,3 +54,42 @@ export const getYearRange = async (req, res) => {
         });
     }
 };
+
+
+
+
+
+export const allInOneSearch = async (req, res) => {
+  try {
+    const { brand, price, year } = req.query;
+    const query = {};
+
+    // Brand filter
+    if (brand) {
+      query.brand = { $regex: brand, $options: "i" };
+    }
+
+    // Price filter (≤ entered price)
+    if (price && !isNaN(price)) {
+      query.price = { $lte: Number(price) };
+    }
+
+    // Year filter
+    if (year && !isNaN(year)) {
+      query.year = Number(year);
+    }
+
+    const cars = await Car.find(query).sort({ price: 1 });
+
+    res.status(200).json({
+      success: true,
+      total: cars.length,
+      data: cars,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

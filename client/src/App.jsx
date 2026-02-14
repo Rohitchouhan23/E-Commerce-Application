@@ -7,13 +7,25 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import CarDetails from './component/CarDetails';
 import CarForm from './pages/CarForm';
-import Dashboard from './pages/Dashboard'
+import Dashboard from './pages/Dashboard';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import { useEffect } from 'react';
 function App() {
+
+
+useEffect(() => {
+  AOS.init({
+    duration: 700,
+    once: true,
+  });
+}, []);
+
   return (
     <>
         <div className="min-h-screen flex flex-col">
           <Header/>
-            <main className="px-1 lg:px-0 mt-20 mb-1">
+            <main className="px-1 lg:px-0  mb-1">
               <Routes>
                 <Route path='/' element={<Home/>}/>
                 <Route path='/login' element={<Login/>}/>

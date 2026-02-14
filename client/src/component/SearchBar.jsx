@@ -1,168 +1,122 @@
-import React, { useEffect, useState } from "react";
-import {
-  getUniqueBrands,
-  getPriceRange,
-  getYearRange,
-} from "../services/authService";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { allInOneSearch } from "../services/authService";
 
 function SearchBar({ onSearch }) {
-  // selected values
+  const [value, setValue] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+
   const [brand, setBrand] = useState("");
   const [price, setPrice] = useState("");
   const [year, setYear] = useState("");
 
-  // filter data
-  const [brands, setBrands] = useState([]);
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
-  const [yearRange, setYearRange] = useState({ min: 2000, max: 2025 });
+  const handleSearch = async () => {
+    try {
+      let params = {};
 
-  const [mobileSearchType, setMobileSearchType] = useState("");
+      if (brand) params.brand = brand.trim();
+      if (price) params.price = Number(price);
+      if (year) params.year = Number(year);
 
-  // fetch filter data
-  useEffect(() => {
-    const fetchFilters = async () => {
-      try {
-        const brandRes = await getUniqueBrands();
-        const priceRes = await getPriceRange();
-        const yearRes = await getYearRange();
+      if (!brand && !price && !year && value.trim()) {
+        const trimmed = value.trim();
+        const num = Number(trimmed);
 
-        setBrands(brandRes.brands || []);
-        setPriceRange({
-          min: priceRes.minPrice,
-          max: priceRes.maxPrice,
-        });
-        setYearRange({
-          min: yearRes.minYear,
-          max: yearRes.maxYear,
-        });
-      } catch (err) {
-        console.error("Filter fetch error", err);
+        if (!isNaN(num)) {
+          if (num >= 1990 && num <= new Date().getFullYear()) {
+            params.year = num;
+          } else {
+            params.price = num;
+          }
+        } else {
+          params.brand = trimmed;
+        }
       }
-    };
 
-    fetchFilters();
-  }, []);
-
-  // 🔥 BACKEND KE HISAAB SE FILTER BANAO
-  const handleSearch = () => {
-    const filters = {};
-
-    if (brand) filters.brand = brand;
-
-    if (price) {
-      filters.minPrice = 0;
-      filters.maxPrice = price;
+      const res = await allInOneSearch(params);
+      onSearch(res.data);
+    } catch (error) {
+      console.log(error);
     }
-
-    if (year) {
-      filters.minYear = year;
-      filters.maxYear = year;
-    }
-
-    console.log("Sending filters:", filters);
-
-    if (onSearch) onSearch(filters);
   };
 
   return (
-    <div className="w-full p-4 bg-white rounded-xl shadow">
-      {/* Desktop View */}
-      <div className="hidden lg:flex w-full gap-4">
-        {/* Brand */}
-        <input
-          type="text"
-          list="brand-list"
-          placeholder="Search Brand"
-          className="flex-1 rounded-xl border px-4 py-2"
-          value={brand}
-          onChange={(e) => setBrand(e.target.value)}
-        />
-        <datalist id="brand-list">
-          {brands.map((b, i) => (
-            <option key={i} value={b} />
-          ))}
-        </datalist>
+    <div className="w-full max-w-7xl mx-auto mt-6">
 
-        {/* Price */}
-        <input
-          type="number"
-          min={priceRange.min}
-          max={priceRange.max}
-          placeholder={`Max Price (${priceRange.min} - ${priceRange.max})`}
-          className="flex-1 rounded-xl border px-4 py-2"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
+      {/* 🔹 GLASS CARD */}
+      <div className="bg-white/70 backdrop-blur-lg border border-gray-200 shadow-xl rounded-2xl p-6">
 
-        {/* Year */}
-        <input
-          type="number"
-          min={yearRange.min}
-          max={yearRange.max}
-          placeholder="Year"
-          className="flex-1 rounded-xl border px-4 py-2"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-        />
+        {/* 🔍 MAIN SEARCH */}
+        <div className="flex flex-col sm:flex-row gap-3">
 
-        <button
-          onClick={handleSearch}
-          className="bg-blue-500 text-white rounded-xl px-6 py-2 hover:bg-blue-600"
-        >
-          Search
-        </button>
-      </div>
-
-      {/* Mobile View */}
-      <div className="lg:hidden w-full">
-        <select
-          className="w-full rounded-xl border px-4 py-2"
-          value={mobileSearchType}
-          onChange={(e) => setMobileSearchType(e.target.value)}
-        >
-          <option value="">Search By</option>
-          <option value="brand">Brand</option>
-          <option value="price">Price</option>
-          <option value="year">Year</option>
-        </select>
-
-        {mobileSearchType === "brand" && (
           <input
             type="text"
-            list="brand-list-mobile"
-            placeholder="Search Brand"
-            className="w-full mt-2 rounded-xl border px-4 py-2"
-            value={brand}
-            onChange={(e) => setBrand(e.target.value)}
+            placeholder="Search by brand, price or year..."
+            className="flex-1 rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
           />
-        )}
 
-        {mobileSearchType === "price" && (
-          <input
-            type="number"
-            placeholder={`Max Price (${priceRange.min} - ${priceRange.max})`}
-            className="w-full mt-2 rounded-xl border px-4 py-2"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-        )}
+          {/* Search Button */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSearch}
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition"
+          >
+            Search
+          </motion.button>
 
-        {mobileSearchType === "year" && (
-          <input
-            type="number"
-            placeholder="Year"
-            className="w-full mt-2 rounded-xl border px-4 py-2"
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-          />
-        )}
+          {/* Filter Toggle */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowFilters(!showFilters)}
+            className="border border-gray-300 px-5 py-3 rounded-xl hover:bg-gray-100 transition"
+          >
+            Filters
+          </motion.button>
+        </div>
 
-        <button
-          onClick={handleSearch}
-          className="w-full mt-3 bg-blue-500 text-white rounded-xl px-6 py-2"
-        >
-          Search
-        </button>
+        {/* 🎛 FILTER ANIMATION */}
+        <AnimatePresence>
+          {showFilters && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 overflow-hidden"
+            >
+              {/* BRAND */}
+              <input
+                type="text"
+                placeholder="Brand"
+                className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
+              />
+
+              {/* PRICE */}
+              <input
+                type="number"
+                placeholder="Max Price"
+                className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+
+              {/* YEAR */}
+              <input
+                type="number"
+                placeholder="Year"
+                className="rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

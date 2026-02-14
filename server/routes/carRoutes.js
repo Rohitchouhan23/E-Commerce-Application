@@ -8,16 +8,18 @@ import {
     updateCar,
     deleteCar,
     getUserCar,
-    soldCar
+    soldCar,
+    getMySoldCars
 } from "../controllers/CarController.js";
 
 
 router.get("/", getAllCar);
 router.get("/my-cars", protect, getUserCar);
+router.get("/my-sold-cars", protect, getMySoldCars);
 router.post("/", protect, createCar);
 router.get("/:id", getCarById);
 router.put("/:id", protect, updateCar);
 router.delete("/:id", protect, deleteCar);
-router.patch("/:id", protect, soldCar);
+router.patch("/:id/sold", protect, soldCar);
 
 export default router; 

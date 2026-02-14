@@ -60,8 +60,14 @@ export const deleteCar = async (id) => {
 };
 
 // PATCH /api/cars/:id (protected) → sold car
+// export const soldCar = async (id) => {
+//   const res = await api.patch(`/api/cars/${id}`);
+//   return res.data;
+// };
+
+
 export const soldCar = async (id) => {
-  const res = await api.patch(`/api/cars/${id}`);
+  const res = await api.patch(`/api/cars/${id}/sold`);
   return res.data;
 };
 
@@ -88,4 +94,13 @@ export const getYearRange = async () => {
 };
 
 
+export const allInOneSearch = async (params) => {
+  const res = await api.get("/api/filter/all", { params });
+  return res.data;
+};
 
+
+export const getMySoldCars = async () => {
+  const res = await api.get("/api/cars/my-sold-cars");
+  return res.data;
+};

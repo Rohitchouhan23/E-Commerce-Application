@@ -6,7 +6,7 @@ function Footer() {
       <div className='container mx-auto px-4 py-8'>
         <div className='grid grid-cols-1 md:grid-cols-4 gap-8 '>
           <div>
-            <h3 className='text-xl font-bold mb-4'>CarMarket</h3>
+            <h3 className='text-xl font-bold mb-4'>CarBazaar</h3>
             <p className='text-gray-400'>Your trusted platform for buying and selling quality used cars.</p>
           </div>
           <div>
@@ -71,7 +71,7 @@ function Footer() {
           </div>
         </div>
                   <div className='border-t mt-8 pt-8 border-gray-700 text-center text-gray-400'>
-            <p>&copy; 2025 CarMarket. All rights reserved.</p>
+            <p>&copy; CarBazaar. All rights reserved.</p>
           </div>
       </div>
     </footer>

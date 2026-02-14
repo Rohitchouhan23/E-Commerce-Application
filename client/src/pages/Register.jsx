@@ -32,7 +32,7 @@ export default function Register() {
         };
 
   return (
-    <div className="rounded-3xl m-3 lg:min-h-screen bg-gray-200 flex items-center justify-center p-4">
+    <div className="mt-20 rounded-3xl m-3 lg:min-h-screen bg-gray-200 flex items-center justify-center p-4">
       <div className="w-full max-w-6xl bg-white rounded-3xl shadow-xl flex flex-col lg:flex-row-reverse overflow-hidden">
 
         {/* FORM */}

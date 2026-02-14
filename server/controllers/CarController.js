@@ -23,59 +23,64 @@ export const createCar = async (req, res) => {
 
 
 export const getAllCar = async (req, res) => {
-    try {
-        const {
-            brand,
-            fuelType,
-            transmission,
-            minPrice,
-            maxPrice,
-            minYear,
-            maxYear,
-            search,
-        } = req.query;
+  try {
+    const {
+      brand,
+      fuelType,
+      transmission,
+      minPrice,
+      maxPrice,
+      minYear,
+      maxYear,
+      search,
+    } = req.query;
 
-        let query = { sold: false };
+    let query = {
+      sold: { $ne: true }
+    };
 
-        if (brand) query.brand = brand;
-        if (fuelType) query.fuelType = fuelType;
-        if (transmission) query.transmission = transmission;
-        if (minPrice || maxPrice) {
-            query.price = {};
-            if (minPrice) query.price.$gte = Number(minPrice);
-            if (maxPrice) query.price.$lte = Number(maxPrice);
-        }
-        if (minYear || maxYear) {
-            query.year = {}
-            if (minYear) query.year.$gte = Number(minYear);
-            if (maxYear) query.year.$lte = Number(maxYear);
-        }
+    if (brand) query.brand = brand;
+    if (fuelType) query.fuelType = fuelType;
+    if (transmission) query.transmission = transmission;
 
-        if (search) {
-            query.$or = [
-                { title: { $regex: search, $options: "i" } },
-                { brand: { $regex: search, $options: "i" } },
-                { model: { $regex: search, $options: "i" } },
-            ];
-        }
-        const cars = await Car.find(query)
-            .populate("owner", "name email")
-            .sort({ createdAt: -1 })
-
-        res.status(200).json({
-            success: true,
-            count: cars.length,
-            cars,
-            
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
     }
-}
 
+    if (minYear || maxYear) {
+      query.year = {};
+      if (minYear) query.year.$gte = Number(minYear);
+      if (maxYear) query.year.$lte = Number(maxYear);
+    }
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { brand: { $regex: search, $options: "i" } },
+        { model: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const cars = await Car.find(query)
+      .populate("owner", "name email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: cars.length,
+      cars,
+    });
+
+  } catch (error) {
+    console.log("SERVER ERROR:", error); // 👈 important
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 //car get by id
 
 export const getCarById = async (req, res) => {
@@ -211,3 +216,28 @@ export const soldCar = async (req, res) => {
         });
     }
 } 
+
+
+
+
+// GET LOGGED-IN USER SOLD CARS
+export const getMySoldCars = async (req, res) => {
+  try {
+    const cars = await Car.find({
+      owner: req.user._id,
+      sold: true,
+    }).sort({ updatedAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: cars.length,
+      cars,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { getMyCars, deleteCar, soldCar } from "../services/authService";
+import { motion, AnimatePresence } from "framer-motion";
+import { Trash2, CheckCircle2, Pencil } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function Mycars() {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
+
+  const carsPerPage = 6;
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -16,103 +23,159 @@ function Mycars() {
         setLoading(false);
       }
     };
-
     fetchCars();
   }, []);
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this car?");
-    if (!confirmDelete) return;
-
-    try {
-      await deleteCar(id);
-      setCars((prev) => prev.filter((car) => car._id !== id));
-    } catch (error) {
-      alert("Failed to delete car");
-      console.log(error);
-    }
+    if (!window.confirm("Delete this car?")) return;
+    await deleteCar(id);
+    setCars((prev) => prev.filter((car) => car._id !== id));
   };
 
   const handleSold = async (id) => {
-    const confirmSold = window.confirm("Are you sure this car is sold?");
-    if (!confirmSold) return;
-
-    try {
-      await soldCar(id);
-      setCars((prev) =>
-        prev.map((car) => (car._id === id ? { ...car, sold: true } : car))
-      );
-    } catch (error) {
-      alert("Failed to mark car as sold");
-      console.log(error);
-    }
+    if (!window.confirm("Mark as sold?")) return;
+    await soldCar(id);
+    setCars((prev) =>
+      prev.map((car) =>
+        car._id === id ? { ...car, sold: true } : car
+      )
+    );
   };
 
-  if (loading) return <p className="text-center mt-10">Loading your cars...</p>;
+  const indexOfLast = currentPage * carsPerPage;
+  const indexOfFirst = indexOfLast - carsPerPage;
+  const currentCars = cars.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(cars.length / carsPerPage);
+
+  if (loading)
+    return (
+      <p className="text-center mt-10 text-gray-500 animate-pulse">
+        Loading your cars...
+      </p>
+    );
 
   return (
-    <div className="p-4 md:p-6">
-      <h2 className="text-2xl text-center font-bold mb-6">My Cars</h2>
-
+    <div className="px-2 sm:px-0">
       {cars.length === 0 ? (
         <p className="text-center text-gray-500">No cars listed yet</p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
-          {cars.map((car) => (
-            <div
-              key={car._id}
-              className="bg-white border rounded-lg shadow hover:shadow-lg transition duration-300"
+        <>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPage}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
             >
-              {/* IMAGE */}
-              <div className="h-24 sm:h-52 lg:h-56 w-full overflow-hidden rounded-t-lg">
-                <img
-                  src={car.images[0]}
-                  alt={car.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              {currentCars.map((car) => (
+                <motion.div
+                  key={car._id}
+                  whileHover={{ y: -5 }}
+                  className="relative bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 overflow-hidden"
+                >
+                  {car.sold && (
+                    <div className="absolute top-3 left-3 bg-red-500 text-white text-xs px-3 py-1 rounded-full z-10">
+                      SOLD
+                    </div>
+                  )}
 
-              {/* DETAILS */}
-              <div className="p-3 sm:p-4">
-                <h3 className="text-md sm:text-lg font-semibold truncate">{car.title}</h3>
-                <p className="text-gray-600 text-sm sm:text-base">{car.brand}</p>
-                <p className="text-green-600 font-bold text-sm sm:text-base">
-                  ₹ {car.price.toLocaleString()}
-                </p>
+                  <div className="h-44 sm:h-48 overflow-hidden">
+                    <img
+                      src={car.images[0]}
+                      alt={car.title}
+                      className="w-full h-full object-cover hover:scale-105 transition duration-500"
+                    />
+                  </div>
 
-                {/* BUTTONS */}
-                <div className="flex flex-wrap gap-2 mt-3">
-                  <button className="flex-1 px-2 py-1 bg-blue-500 text-white rounded text-xs sm:text-sm hover:bg-blue-600 transition">
-                    Update
-                  </button>
-                  <button
-                    onClick={() => handleDelete(car._id)}
-                    className="flex-1 px-2 py-1 bg-red-500 text-white rounded text-xs sm:text-sm hover:bg-red-600 transition"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => handleSold(car._id)}
-                    disabled={car.sold}
-                    className={`flex-1 px-2 py-1 rounded text-xs sm:text-sm text-white transition ${
-                      car.sold
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-gray-700 hover:bg-gray-800"
-                    }`}
-                  >
-                    {car.sold ? "Sold" : "Mark Sold"}
-                  </button>
-                </div>
+                  <div className="p-4">
+                    <h3 className="text-base sm:text-lg font-semibold truncate">
+                      {car.title}
+                    </h3>
 
-                {car.sold && (
-                  <p className="mt-2 text-red-500 font-semibold text-xs sm:text-sm text-center">
-                    SOLD
-                  </p>
-                )}
-              </div>
+                    <p className="text-gray-500 text-sm">
+                      {car.brand}
+                    </p>
+
+                    <p className="text-indigo-600 font-bold text-lg mt-1">
+                      ₹ {car.price.toLocaleString()}
+                    </p>
+
+                    <div className="mt-4 space-y-2">
+                      <div className="flex gap-2">
+
+                        {/* ✅ UPDATE BUTTON */}
+                        <button
+                          onClick={() =>
+                            navigate("/carsform", {
+                              state: { car },
+                            })
+                          }
+                          className="flex-1 flex items-center justify-center gap-1 bg-indigo-600 text-white py-2 rounded-lg text-sm hover:bg-indigo-700 transition"
+                        >
+                          <Pencil size={14} />
+                          Update
+                        </button>
+
+                        <button
+                          onClick={() => handleDelete(car._id)}
+                          className="flex-1 flex items-center justify-center gap-1 bg-red-500 text-white py-2 rounded-lg text-sm hover:bg-red-600 transition"
+                        >
+                          <Trash2 size={14} />
+                          Delete
+                        </button>
+                      </div>
+
+                      <button
+                        onClick={() => handleSold(car._id)}
+                        disabled={car.sold}
+                        className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg text-sm text-white transition ${
+                          car.sold
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-gray-800 hover:bg-black"
+                        }`}
+                      >
+                        <CheckCircle2 size={14} />
+                        {car.sold ? "Sold" : "Mark Sold"}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
+
+          {totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-3 mt-8">
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.max(prev - 1, 1))
+                }
+                disabled={currentPage === 1}
+                className="w-full sm:w-auto px-5 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50 transition"
+              >
+                Previous
+              </button>
+
+              <span className="text-sm font-medium text-gray-600">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) =>
+                    Math.min(prev + 1, totalPages)
+                  )
+                }
+                disabled={currentPage === totalPages}
+                className="w-full sm:w-auto px-5 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50 transition"
+              >
+                Next
+              </button>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
     </div>
   );
